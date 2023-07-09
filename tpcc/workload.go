@@ -68,6 +68,11 @@ type Config struct {
 	// Should be int between [0, 100) and sums to 100.
 	Weight []int
 
+	// Start warehouse range and end warehosue range
+	Start_range  int
+	End_range    int
+	Remote_ratio int
+
 	// whether to involve wait times(keying time&thinking time)
 	Wait bool
 

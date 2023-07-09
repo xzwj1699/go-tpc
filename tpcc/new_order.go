@@ -83,6 +83,40 @@ func (w *Workloader) otherWarehouse(ctx context.Context, warehouse int) int {
 	return other
 }
 
+func (w *Workloader) otherWarehouse2(ctx context.Context, warehouse int) int {
+	s := getTPCCState(ctx)
+
+	if w.cfg.Warehouses == 1 {
+		return warehouse
+	}
+
+	var other int
+	for {
+		other = randInt(s.R, w.cfg.Start_range, w.cfg.End_range)
+		if other != warehouse {
+			break
+		}
+	}
+	return other
+}
+
+func (w *Workloader) otherWarehouseExcluding(ctx context.Context, warehouse int) int {
+	s := getTPCCState(ctx)
+
+	if w.cfg.Warehouses == 1 {
+		return warehouse
+	}
+
+	var other int
+	for {
+		other = randInt(s.R, 1, w.cfg.Warehouses)
+		if other < w.cfg.Start_range || other > w.cfg.End_range {
+			break
+		}
+	}
+	return other
+}
+
 type orderItem struct {
 	olSupplyWID int
 	olIID       int
@@ -125,7 +159,8 @@ func (w *Workloader) runNewOrder(ctx context.Context, thread int) error {
 		wID:    randInt(s.R, 1, w.cfg.Warehouses),
 		dID:    randInt(s.R, 1, districtPerWarehouse),
 		cID:    randCustomerID(s.R),
-		oOlCnt: randInt(s.R, 5, 15),
+		oOlCnt: 10,
+		// oOlCnt: randInt(s.R, 5, 15),
 	}
 
 	rbk := randInt(s.R, 1, 100)
@@ -134,6 +169,8 @@ func (w *Workloader) runNewOrder(ctx context.Context, thread int) error {
 	items := make([]orderItem, d.oOlCnt)
 
 	itemsMap := make(map[int]*orderItem, d.oOlCnt)
+
+	cross_region := randInt(s.R, 1, 100) <= w.cfg.Remote_ratio
 
 	for i := 0; i < len(items); i++ {
 		item := &items[i]
@@ -155,8 +192,13 @@ func (w *Workloader) runNewOrder(ctx context.Context, thread int) error {
 
 		if w.cfg.Warehouses == 1 || randInt(s.R, 1, 100) != 1 {
 			item.olSupplyWID = d.wID
+		} else if cross_region {
+			item.olSupplyWID = w.otherWarehouseExcluding(ctx, d.wID)
+			// item.olSupplyWID = w.otherWarehouse(ctx, d.wID)
+			item.remoteWarehouse = 1
+			allLocal = 0
 		} else {
-			item.olSupplyWID = w.otherWarehouse(ctx, d.wID)
+			item.olSupplyWID = w.otherWarehouse2(ctx, d.wID)
 			item.remoteWarehouse = 1
 			allLocal = 0
 		}

@@ -113,6 +113,9 @@ func registerTpcc(root *cobra.Command) {
 	cmdRun.PersistentFlags().BoolVar(&tpccConfig.Wait, "wait", false, "including keying & thinking time described on TPC-C Standard Specification")
 	cmdRun.PersistentFlags().DurationVar(&tpccConfig.MaxMeasureLatency, "max-measure-latency", measurement.DefaultMaxLatency, "max measure latency in millisecond")
 	cmdRun.PersistentFlags().IntSliceVar(&tpccConfig.Weight, "weight", []int{45, 43, 4, 4, 4}, "Weight for NewOrder, Payment, OrderStatus, Delivery, StockLevel")
+	cmdRun.PersistentFlags().IntVar(&tpccConfig.Start_range, "start_range", 0, "Start range of warehouse in workload")
+	cmdRun.PersistentFlags().IntVar(&tpccConfig.End_range, "end_range", 100, "End range of warehouse in workload")
+	cmdRun.PersistentFlags().IntVar(&tpccConfig.Remote_ratio, "ratio", 0, "Remote ratio of supply warehouse in new order txn")
 
 	var cmdCleanup = &cobra.Command{
 		Use:   "cleanup",
