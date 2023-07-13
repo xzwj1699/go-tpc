@@ -116,6 +116,7 @@ func registerTpcc(root *cobra.Command) {
 	cmdRun.PersistentFlags().IntVar(&tpccConfig.Start_range, "start_range", 0, "Start range of warehouse in workload")
 	cmdRun.PersistentFlags().IntVar(&tpccConfig.End_range, "end_range", 100, "End range of warehouse in workload")
 	cmdRun.PersistentFlags().IntVar(&tpccConfig.Remote_ratio, "ratio", 0, "Remote ratio of supply warehouse in new order txn")
+	cmdRun.PersistentFlags().Float32Var(&tpccConfig.MultiHome, "mh", 0.01, "Multi Home ratio in new order")
 
 	var cmdCleanup = &cobra.Command{
 		Use:   "cleanup",

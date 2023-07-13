@@ -170,7 +170,7 @@ func (w *Workloader) runNewOrder(ctx context.Context, thread int) error {
 
 	itemsMap := make(map[int]*orderItem, d.oOlCnt)
 
-	cross_region := randInt(s.R, 1, 100) <= w.cfg.Remote_ratio
+	cross_region := true
 
 	for i := 0; i < len(items); i++ {
 		item := &items[i]
@@ -190,7 +190,7 @@ func (w *Workloader) runNewOrder(ctx context.Context, thread int) error {
 			}
 		}
 
-		if w.cfg.Warehouses == 1 || randInt(s.R, 1, 100) != 1 {
+		if w.cfg.Warehouses == 1 || randInt(s.R, 1, 100) <= w.cfg.Remote_ratio {
 			item.olSupplyWID = d.wID
 		} else if cross_region {
 			item.olSupplyWID = w.otherWarehouseExcluding(ctx, d.wID)

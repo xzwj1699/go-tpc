@@ -73,6 +73,9 @@ type Config struct {
 	End_range    int
 	Remote_ratio int
 
+	// Cross-warehouse probability
+	MultiHome float32
+
 	// whether to involve wait times(keying time&thinking time)
 	Wait bool
 
