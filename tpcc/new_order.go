@@ -156,7 +156,7 @@ func (w *Workloader) runNewOrder(ctx context.Context, thread int) error {
 
 	// refer 2.4.1
 	d := newOrderData{
-		wID:    randInt(s.R, 1, w.cfg.Warehouses),
+		wID:    randInt(s.R, w.cfg.Start_range, w.cfg.End_range),
 		dID:    randInt(s.R, 1, districtPerWarehouse),
 		cID:    randCustomerID(s.R),
 		oOlCnt: 10,
